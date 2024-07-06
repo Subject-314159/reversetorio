@@ -4,6 +4,32 @@ More or less, less is more, but how you keeping score? Means for every research 
 
 Factorio but in reverse. You start with a rocket silo and your goal is to craft the crash site space ship. Decompose science into items, unassemble items into basic materials and unsmelt basic materials into ores.
 
+## Generate random numbers
+
+![One magical logo](https://raw.githubusercontent.com/Subject-314159/reversetorio/main/assets/factorio-logo.png)
+The Factorio logo is imbued with magical powers and spawns random numbers
+
+## Move items in bulk
+
+![With great power comes great inserter hand capacity](https://raw.githubusercontent.com/Subject-314159/reversetorio/main/assets/huge-inserters.png)
+I promised myself not to make a "that's what she said" joke but damn those things are huge..
+
+## Spawn any item
+
+![Nothing beats a nice hot cup of tea](https://raw.githubusercontent.com/Subject-314159/reversetorio/main/assets/cup-of-tea.png)
+Feed probability numbers into finite probability drives to spawn items at will
+
+## Or science
+
+![Labs are also reversed](https://raw.githubusercontent.com/Subject-314159/reversetorio/main/assets/science-spawning.png)
+Why go through all the trouble of long recipe chains if you can just spawn science from thin air?
+
+## Embark on a mental journey
+
+So you think you're good at Factorio, huh? Well be prepared to forget everything you know and get ready for one of the biggest mindfucks in historio.
+
+---
+
 # Mod compatibility
 
 This mod relies on procedural creation of items, entities, recipes and technology. By design this mod should be compatible with a lot of other mods, even those that add a lot of content.
