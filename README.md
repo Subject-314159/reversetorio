@@ -24,6 +24,16 @@ Feed probability numbers into finite probability drives to spawn items at will
 ![Labs are also reversed](https://raw.githubusercontent.com/Subject-314159/reversetorio/main/assets/science-spawning.png)
 Why go through all the trouble of long recipe chains if you can just spawn science from thin air?
 
+## Uncraft any item
+
+![Uncraft any item](https://raw.githubusercontent.com/Subject-314159/reversetorio/main/assets/reverse-craft.png)
+Break down items to the most basic resources
+
+## And finally research the crash site
+
+![Research the crash site](https://raw.githubusercontent.com/Subject-314159/reversetorio/main/assets/crashsite-research.png)
+Finally your personal space ship is here! It's a bit wrecked though..
+
 ## Embark on a mental journey
 
 So you think you're good at Factorio, huh? Well be prepared to forget everything you know and get ready for one of the biggest mindfucks in historio.
