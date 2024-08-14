@@ -5,16 +5,21 @@ local sciences = util.getAllScienceNames()
 local new = {}
 local grp = {}
 local end_itm = {}
+local int_itm = {}
 local raw_itm = {}
 local valid_itm = {}
+local valid_itm_name = {}
 local invalid_itm = {}
+local invalid_itm_name = {}
+local valid_rec = {}
+local invalid_rec = {}
 local cost = {}
 
 ---------------------------------------------------------------------------
 -- Step 1: Get list of valid recipes and items
 ---------------------------------------------------------------------------
 
--- Create list of items (and related groups) for items that do not have a creating recipe
+-- Get initial array of valid items (i.e. items which are not hidden and not ignored)
 
 for _, t in pairs(util.itypes) do
     for _, p in pairs(data.raw[t]) do
@@ -25,79 +30,23 @@ for _, t in pairs(util.itypes) do
         end
 
         -- Validity check
-        local valid = true
         if (not util.arrayHasValue(util.itemsToIgnore, p.name)) and (not hidden) then
-
-            -- Check if current item is ingredient or result
-            local isresult = false
-            local isingredient = false
-
-            -- Loop through recipes
-            for _, r in pairs(data.raw["recipe"]) do
-
-                -- Normalize recipe pointer
-                local rec = util.getRecipePointer(r)
-                local results = util.getResultsNormalized(rec)
-                local ingredients = util.getIngredientsNormalized(rec)
-
-                -- Consider only recipes that have ingredients and results
-                -- I.e. ignore spawn out of nowhere recipes and void recipes
-                if #ingredients > 0 and #results > 0 then
-
-                    -- Check if result contains only valid items
-                    for _, res in pairs(results) do
-                        if res.name == p.name then
-                            isresult = true
-                        end
-                    end
-
-                    -- Check if ingredients only contain valid items
-                    for _, res in pairs(ingredients) do
-                        if res.name == p.name then
-                            isingredient = true
-                        end
-                    end
-                end
-            end
-
-            -- Only consider items that are ingredients, results, or both
-            if isingredient or isresult then
-                -- If item is result but not an ingredien add to array of end items
-                if isresult and (not isingredient) then
-                    -- End items only
-                    table.insert(end_itm, p)
-                end
-
-                -- If item is not a result and an ingredient add to array of raw items
-                if (not isresult) and isingredient then
-                    table.insert(raw_itm, p.name)
-                end
-            else
-                -- All other items are invalid
-                valid = false
-            end
+            table.insert(valid_itm, p)
+            table.insert(valid_itm_name, p.name)
         else
-            valid = false
-            -- For debugging
-            -- if util.arrayHasValue(util.itemsToIgnore, p.name) then
-            --     log("Ignoring blacklisted item " .. p.name)
-            -- else
-            --     log("Ignoring hidden item " .. p.name)
-            -- end
-        end
-
-        -- Add item to valid items array
-        if valid then
-            table.insert(valid_itm, p.name)
-        else
-            table.insert(invalid_itm, p.name)
+            table.insert(invalid_itm, p)
+            table.insert(invalid_itm_name, p.name)
         end
     end
 end
 
+local invi = {}
+for _, i in pairs(invalid_itm) do
+    table.insert(invi, i.name)
+end
+log(serpent.block({"Invalid itm", invi}))
+
 -- Get array of valid recipes (i.e. where all the inputs and outputs are valid items)
-local valid_rec = {}
-local invalid_rec = {}
 for _, r in pairs(data.raw["recipe"]) do
     -- Normalize recipe pointer
     local rec = util.getRecipePointer(r)
@@ -112,12 +61,12 @@ for _, r in pairs(data.raw["recipe"]) do
 
     -- Check if result contains only valid items
     for _, res in pairs(results) do
-        valid = valid and util.arrayHasValue(valid_itm, res.name)
+        valid = valid and util.arrayHasValue(valid_itm_name, res.name)
     end
 
     -- Check if ingredients only contain valid items
     for _, res in pairs(ingredients) do
-        valid = valid and util.arrayHasValue(valid_itm, res.name)
+        valid = valid and util.arrayHasValue(valid_itm_name, res.name)
     end
 
     if valid then
@@ -125,6 +74,76 @@ for _, r in pairs(data.raw["recipe"]) do
     else
         table.insert(invalid_rec, r)
     end
+end
+
+local invr = {}
+for _, r in pairs(invalid_rec) do
+    table.insert(invr, r.name)
+end
+
+log(serpent.block({"Invalid rec", invr}))
+
+-- Create list of items (and related groups) for items that do not have a creating recipe
+local undefined = {}
+for _, p in pairs(valid_itm) do
+
+    -- Check if current item is ingredient or result
+    local isresult = false
+    local isingredient = false
+
+    -- Loop through valid recipes
+    for _, r in pairs(valid_rec) do
+
+        -- Normalize recipe pointer
+        local rec = util.getRecipePointer(r)
+        local results = util.getResultsNormalized(rec)
+        local ingredients = util.getIngredientsNormalized(rec)
+
+        -- Consider only recipes that have ingredients and results
+        -- I.e. ignore spawn out of nowhere recipes and void recipes
+        if #ingredients > 0 and #results > 0 then
+
+            -- Check if result contains only valid items
+            for _, res in pairs(results) do
+                if res.name == p.name then
+                    isresult = true
+                end
+            end
+
+            -- Check if ingredients only contain valid items
+            for _, res in pairs(ingredients) do
+                if res.name == p.name then
+                    isingredient = true
+                end
+            end
+        else
+            log(serpent.block({"Hmm we have a valid recipe but no ingredients and results..", r}))
+        end
+    end
+
+    -- Only consider items that are ingredients, results, or both
+    if isingredient or isresult then
+        -- If item is result but not an ingredien add to array of end items
+        if isresult and (not isingredient) then
+            -- End items only
+            table.insert(end_itm, p)
+        end
+
+        -- If item is not a result and an ingredient add to array of raw items
+        if (not isresult) and isingredient then
+            table.insert(raw_itm, p.name)
+        end
+
+        if isresult and isingredient then
+            table.insert(int_itm, p.name)
+        end
+    else
+        table.insert(undefined, p.name)
+    end
+end
+if #undefined > 0 then
+    log("ERROR: Undefined items remain after validity check!")
+    log(serpent.block(undefined))
 end
 
 ---------------------------------------------------------------------------
@@ -390,15 +409,26 @@ for _, p in pairs(end_itm) do
                 type = type,
                 name = p.name,
                 amount = 1
-            }, {
-                type = "item",
-                name = "research-essence",
-                amount = math.ceil(math.sqrt(cost) / 2)
             }},
             subgroup = util.const.SPAWN_PREFIX .. gr,
             order = p.order,
             category = "finite-improbability"
         }
+
+        -- Add research essence as ingredient if science, or as result if not science
+        local re = {
+            type = "item",
+            name = "research-essence",
+            amount = 1
+            -- amount = math.ceil(math.sqrt(cost) / 2)
+        }
+        if util.arrayHasValue(sciences, p.name) then
+            re.amount = 1
+            table.insert(prop.ingredients, re)
+        else
+            re.amount = math.ceil(math.sqrt(cost) / 2)
+            table.insert(prop.results, re)
+        end
 
         -- Add recipe as unlock tech
         local techs = util.getTechsThatUnlockItem(p.name)
@@ -470,6 +500,13 @@ for _, s in pairs(data.raw["item-subgroup"]) do
                         hasscience = true
                     end
                 end
+
+                for _, res in pairs(ingredients) do
+                    -- Check if this is a science
+                    if util.arrayHasValue(sciences, res.name) then
+                        hasscience = true
+                    end
+                end
             end
         end
     end
@@ -516,16 +553,6 @@ for _, s in pairs(data.raw["item-subgroup"]) do
         }
         table.insert(reps, prop)
 
-        -- Add research essence as result if is science
-        if hasscience then
-            local prop = {
-                type = "item",
-                name = "research-essence",
-                amount = math.ceil(math.sqrt(tco) / 2)
-            }
-            table.insert(reps, prop)
-        end
-
         -- Create the recipe & add to new
         local itm = util.getItemPrototypeByName(reps[1].name)
         -- local ico
@@ -547,6 +574,17 @@ for _, s in pairs(data.raw["item-subgroup"]) do
                 main_product = itm.name,
                 category = "grouped-improbability"
             }
+
+            -- Add research essence as ingredient if is science, but not if group is rocket launch
+            if hasscience and s.name ~= util.const.ROCKET_CAT then
+                local ing = {
+                    type = "item",
+                    name = "research-essence",
+                    -- amount = math.ceil(math.sqrt(tco) / 2)
+                    amount = 1
+                }
+                table.insert(prop.ingredients, ing)
+            end
 
             -- Add recipe as unlock tech
             if #techs and not hasscience then
@@ -578,17 +616,20 @@ for _, s in pairs(data.raw["item-subgroup"]) do
 end
 
 -- Create spawning recipe for science
--- Get total cost for all sciences first
+-- Get total cost for all sciences and result array per science first
 local tc = 0
 local res = {}
 for _, s in pairs(sciences) do
-    tc = tc + getCostCalculated(s)
-    local prop = {
-        type = "item",
-        name = s,
-        amount = 1
-    }
-    table.insert(res, prop)
+    -- Ignore essence items
+    if not util.arrayHasValue(util.itemsToIgnore, s) then
+        tc = tc + getCostCalculated(s)
+        local prop = {
+            type = "item",
+            name = s,
+            amount = 1
+        }
+        table.insert(res, prop)
+    end
 end
 
 -- Add the actual recipe
@@ -601,7 +642,8 @@ local prop = {
         icon_mipmaps = 4,
         tint = {1, 0, 0}
     }},
-    ingredients = {{"probability-numbers", tc}},
+    -- ingredients = {{"probability-numbers", tc}, {"research-essence", math.ceil(math.sqrt(tc))}},
+    ingredients = {{"probability-numbers", tc}, {"research-essence", 1}},
     energy_required = 0.5,
     results = res,
     subgroup = util.const.SPAWN_PREFIX .. "science-pack",
@@ -610,6 +652,11 @@ local prop = {
     hidden = true
 }
 table.insert(new, prop)
+
+-- Add subgroup to update array
+if not util.arrayHasValue(grp, "science-pack") then
+    table.insert(grp, "science-pack")
+end
 
 -- Set fixed recipe for spawning lab
 local lab = data.raw["assembling-machine"]["inverse-lab"]

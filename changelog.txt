@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.1.1
+Date: 2024-08-14
+  Bugfixes:
+    - Added furnace-recipe-selection as dependency to ensure smelting recipes with multiple ingredients at least work
+---------------------------------------------------------------------------------------------------
 Version: 0.1.0
 Date: 2024-07-06
   Features:
