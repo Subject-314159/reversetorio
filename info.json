@@ -1,14 +1,13 @@
 {
   "name": "reversetorio",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "title": "Reversetorio",
   "author": "Subject31415",
   "factorio_version": "1.1",
   "dependencies": [
     "base >= 1.1",
     "bzgold",
-    "bzlead",
-    "furnace-recipe-selection"
+    "bzlead"
   ],
   "description": "Factorio but in reverse. You start with a rocket silo and your goal is to craft the crash site space ship. Decompose science into items, unassemble items into basic materials and unsmelt basic materials into ores."
 }

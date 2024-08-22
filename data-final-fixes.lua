@@ -1,4 +1,8 @@
 ---------------------------------------------------------------------------
+-- Change furnace entities to assemblers
+require("prototypes.entities.furnace-final")
+
+---------------------------------------------------------------------------
 --[[
 In data-final-fixes we should have all items, recipes and technology from other mods loaded
 The last things we need to do:

@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.1.2
+Date: 2024-08-14
+  Changes:
+    - Removed dependency on furnace-recipe-selection and added to reversetorio mod codebase
+---------------------------------------------------------------------------------------------------
 Version: 0.1.1
 Date: 2024-08-14
   Bugfixes:
