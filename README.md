@@ -62,6 +62,8 @@ This mod starts with a limited number of crafting recipes available which by des
 -   Mods that add a lot of recipes that require key entities (such as belts, power poles, inserters)
     -   Because spawn recipes are only generated for end items (i.e. items which are not an ingredient in other recipes)
 
+---
+
 # Known issues
 
 This mod is in early development stage and playable from finish to start. There are still some major-minor issues which are non-gamebreaking that should be taken into account:
@@ -75,6 +77,10 @@ This mod is in early development stage and playable from finish to start. There 
 -   Mods that copy recipes without updating the sort order or add recipes without sort order will mess up the sort order of the reverse recipes as well (won't fix)
 -   Start menu background videos with crafting chains are broken (won't fix)
 -   The source code is a mess, but it works™
+
+# Roadmap
+
+-   Solve known issues
 
 # Acknowledgement
 

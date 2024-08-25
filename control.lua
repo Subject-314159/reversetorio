@@ -41,7 +41,7 @@ end)
 script.on_event(defines.events.on_player_created, function(e)
     -- TODO cleanup: Move this to dedicated function
     if remote.interfaces["freeplay"] and not settings.global["skip-intro-cutscene"].value then
-        local player = game.players[e.player_index]
+        local player = game.get_player(e.player_index)
         local waypoints = {{
             position = global.silo.position,
             transition_time = 1,

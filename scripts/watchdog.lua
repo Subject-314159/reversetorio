@@ -17,7 +17,7 @@ end
 function watchdog.on_built(e)
     local entity = e.entity
     if e.player_index then
-        local player = game.players[e.player_index]
+        local player = game.get_player(e.player_index)
         if player then
             local frc = player.force
             if frc then
